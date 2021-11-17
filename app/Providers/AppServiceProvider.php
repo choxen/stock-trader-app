@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\StocksController;
+use App\Repositories\StocksRepository;
+use App\Services\StockBuyService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+
     }
 
     /**

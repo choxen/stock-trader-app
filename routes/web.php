@@ -1,24 +1,33 @@
 <?php
 
+use App\Http\Controllers\StocksController;
+use App\Http\Controllers\TradersController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/home', function () {
+    return view('home');
+})->middleware(['auth', 'verified'])->name('home');
+
+Route::get('/transactions', [TradersController::class, 'transactions'])
+    ->middleware(['auth', 'verified'])->name('transactions');
+
+Route::get('/myStocks', [StocksController::class, 'myStocks'])
+    ->middleware(['auth', 'verified'])->name('stocks.my');
+
+Route::post('/search', [StocksController::class, 'search'])
+    ->name('search');
+
+Route::get('/search/{symbol}/stock', [StocksController::class, 'result'])
+    ->name('result');
+
+Route::post('/buy/stock/{company}/{stock}/{price}', [StocksController::class, 'buy'])
+    ->middleware(['auth', 'verified'])->name('buy.stock');
+
+Route::post('/sell/{stock}', [StocksController::class, 'sell'])
+    ->middleware(['auth', 'verified'])->name('sell.stock');
 
 require __DIR__ . '/auth.php';

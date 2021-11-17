@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use ErrorException;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -35,7 +37,9 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            if ($e instanceof ErrorException || $e instanceof ClientException) {
+                return redirect()->back()->withErrors(['msg' => 'Stock not found']);
+            }
         });
     }
 }
