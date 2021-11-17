@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\SendEmailEvent;
 use App\Events\StockPurchased;
+use App\Listeners\SendEmail;
 use App\Listeners\SendStockPurchasedNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -22,14 +24,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         StockPurchased::class => [
             SendStockPurchasedNotification::class
+        ],
+        SendEmailEvent::class => [
+            SendEmail::class
         ]
     ];
 
-    /**
-     * Register any events for your application.
-     *
-     * @return void
-     */
     public function boot()
     {
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\StocksController;
 use App\Http\Controllers\TradersController;
 use Illuminate\Support\Facades\Route;
@@ -29,5 +30,11 @@ Route::post('/buy/stock/{company}/{stock}/{price}', [StocksController::class, 'b
 
 Route::post('/sell/{stock}', [StocksController::class, 'sell'])
     ->middleware(['auth', 'verified'])->name('sell.stock');
+
+Route::get('/email', [EmailController::class, 'show'])
+    ->name('email');
+
+Route::post('/email', [EmailController::class, 'sendEmail'])
+    ->name('sendEmail');
 
 require __DIR__ . '/auth.php';
