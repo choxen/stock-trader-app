@@ -30,4 +30,7 @@ Route::post('/buy/stock/{company}/{stock}/{price}', [StocksController::class, 'b
 Route::post('/sell/{stock}', [StocksController::class, 'sell'])
     ->middleware(['auth', 'verified'])->name('sell.stock');
 
+Route::get('/send-email', [\App\Http\Controllers\SendEmailController::class, 'showForm']);
+Route::post('/send-email', [\App\Http\Controllers\SendEmailController::class, 'send'])->name('email.send');
+
 require __DIR__ . '/auth.php';
