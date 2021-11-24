@@ -5,7 +5,7 @@ use App\Http\Controllers\TradersController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->to('home');
 });
 
 Route::get('/home', function () {
@@ -15,19 +15,19 @@ Route::get('/home', function () {
 Route::get('/transactions', [TradersController::class, 'transactions'])
     ->middleware(['auth', 'verified'])->name('transactions');
 
-Route::get('/myStocks', [StocksController::class, 'myStocks'])
-    ->middleware(['auth', 'verified'])->name('stocks.my');
+Route::get('/stocks/owned', [StocksController::class, 'owned'])
+    ->middleware(['auth', 'verified'])->name('stocks.owned');
 
-Route::post('/search', [StocksController::class, 'search'])
-    ->name('search');
+Route::post('/stocks/search', [StocksController::class, 'search'])
+    ->middleware(['auth', 'verified'])->name('stocks.search');
 
-Route::get('/search/{symbol}/stock', [StocksController::class, 'result'])
-    ->name('result');
+Route::get('/stocks/search/{symbol}', [StocksController::class, 'result'])
+    ->middleware(['auth', 'verified'])->name('stocks.result');
 
-Route::post('/buy/stock/{company}/{stock}/{price}', [StocksController::class, 'buy'])
-    ->middleware(['auth', 'verified'])->name('buy.stock');
+Route::post('/stocks/buy/{company}/{stock}', [StocksController::class, 'buy'])
+    ->middleware(['auth', 'verified'])->name('stocks.buy');
 
-Route::post('/sell/{stock}', [StocksController::class, 'sell'])
-    ->middleware(['auth', 'verified'])->name('sell.stock');
+Route::post('/stocks/sell/{stock}', [StocksController::class, 'sell'])
+    ->middleware(['auth', 'verified'])->name('stocks.sell');
 
 require __DIR__ . '/auth.php';

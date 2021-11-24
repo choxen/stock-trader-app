@@ -9,9 +9,9 @@ class CompanyProfile
     private string $currency;
     private string $exchange;
     private string $country;
-    private string $phone;
+    private int $phone;
     private string $logo;
-    private string $sharesOutstanding;
+    private float $sharesOutstanding;
 
     public function __construct(array $company)
     {
@@ -51,7 +51,7 @@ class CompanyProfile
         return $this->country;
     }
 
-    public function phone(): string
+    public function phone(): int
     {
         return $this->phone;
     }
@@ -61,7 +61,7 @@ class CompanyProfile
         return $this->logo;
     }
 
-    public function sharesOutstanding(): string
+    public function sharesOutstanding(): float
     {
         return $this->sharesOutstanding;
     }

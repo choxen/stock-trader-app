@@ -1,22 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-400 leading-tight">
             {{ __('Transactions') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+            <div class="overflow-hidden">
+                <div class="p-6">
                     @foreach($transactions as $transaction)
-                        <div class="border rounded-md m-3 text-white bg-gray-700 shadow-xl">
+                        <div class="border rounded-md m-3 text-white bg-gray-700 border-gray-700 shadow-xl">
                             <div class="flex flex-row justify-between">
-                                <div class="inline-flex justify-center">
+                                <div class="justify-center">
                                     <div class="m-1">
                                         <p>Stock: </p>
                                         {{ $transaction->stock }}
                                     </div>
+                                </div>
+                                <div class="justify-center">
                                     <div class="m-1">
                                         <p>Quantity: </p>
                                         {{ $transaction->quantity }}
@@ -24,7 +26,7 @@
                                 </div>
                                 <div class="m-1.5">
                                     <p>Price:</p>
-                                    USD: {{ $transaction->credits_amount }}
+                                    {{ number_format($transaction->money, 2) }}$
                                 </div>
                                 <div class="m-1.5 flex order-last justify-end min-h-6 place-self-center">
                                     <div

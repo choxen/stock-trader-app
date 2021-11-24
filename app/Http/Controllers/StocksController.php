@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\StockPurchased;
 use App\Http\Requests\StockRequest;
 use App\Models\Stock;
 use App\Repositories\StocksRepository;
+use App\Rules\AllowedTime;
+use App\Rules\EnoughMoney;
+use App\Rules\EnoughStocks;
+use App\Rules\Workday;
 use App\Services\StockBuyService;
 use App\Services\StockSellService;
 use Illuminate\Http\Request;
@@ -22,11 +25,16 @@ class StocksController extends Controller
         $this->stocksRepository = $stocksRepository;
     }
 
-    public function myStocks(): View
+    public function owned(): View
     {
         $stocks = Auth::user()->stocks()->paginate(10);
 
-        return view('mystocks')->with(['stocks' => $stocks]);
+        foreach ($stocks->all() as $stock) {
+            $price = $this->stocksRepository->companyQuoteData($stock->ticker)->currentPrice();
+            $stock->total_profit = $price * $stock->quantity - $stock->total_invested;
+        }
+
+        return view('owned-stocks')->with(['stocks' => $stocks]);
     }
 
     public function result(string $symbol)
@@ -60,21 +68,51 @@ class StocksController extends Controller
             return redirect()->back();
         }
 
-        return redirect()->route('result', $stockData['displaySymbol']);
+        return redirect()->route('stocks.result', $stockData->displaySymbol());
     }
 
-    public function buy(string $company, string $stock, string $price, Request $request, StockBuyService $service)
+    public function buy(Request $request, StockBuyService $service, string $company, string $ticker)
     {
-        $service->execute($company, $stock, $price, $request);
+        $user = Auth::user();
 
-        StockPurchased::dispatch(Auth::user(), $stock, $price);
+        $price = $this->stocksRepository->companyQuoteData($ticker)->currentPrice();
+
+        $request->request->add([
+            'time' => now(config('app.timezone'))
+        ]);
+        $request->validate([
+            'stock-quantity' => [
+                'required',
+                new EnoughMoney($user->money, $price)
+            ],
+            'time' => [
+                new AllowedTime(),
+                new Workday()
+            ]
+        ]);
+
+        $service->execute($company, $ticker, $price, (int)$request->get('stock-quantity'));
 
         return redirect()->back();
     }
 
-    public function sell(Stock $stock, Request $request, StockSellService $service)
+    public function sell(Request $request, StockSellService $service, Stock $stock)
     {
-        $service->execute($stock, $request->get('stock-quantity'));
+        $request->request->add([
+            'time' => now(config('app.timezone'))
+        ]);
+        $request->validate([
+            'stock-quantity' => [
+                'required',
+                new EnoughStocks($stock->quantity)
+            ],
+            'time' => [
+                new AllowedTime(),
+                new Workday()
+            ]
+        ]);
+
+        $service->execute($stock, (int)$request->get('stock-quantity'));
 
         return redirect()->back();
     }

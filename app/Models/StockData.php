@@ -4,57 +4,36 @@ namespace App\Models;
 
 class StockData
 {
-    private float $currentPrice;
-    private float $change;
-    private float $percentChange;
-    private float $highestPrice;
-    private float $lowestPrice;
-    private float $openPrice;
-    private float $previousClosePrice;
+    private string $description;
+    private string $displaySymbol;
+    private string $symbol;
+    private string $type;
 
-    public function __construct(array $stockData)
+    public function __construct(array $data)
     {
-        $this->currentPrice = $stockData['c'];
-        $this->change = $stockData['d'];
-        $this->percentChange = $stockData['dp'];
-        $this->highestPrice = $stockData['h'];
-        $this->lowestPrice = $stockData['l'];
-        $this->openPrice = $stockData['o'];
-        $this->previousClosePrice = $stockData['pc'];
+        $this->description = $data['description'];
+        $this->displaySymbol = $data['displaySymbol'];
+        $this->symbol = $data['symbol'];
+        $this->type = $data['type'];
     }
 
-    public function currentPrice(): float
+    public function description(): string
     {
-        return $this->currentPrice;
+        return $this->description;
     }
 
-    public function change(): float
+    public function displaySymbol(): string
     {
-        return $this->change;
+        return $this->displaySymbol;
     }
 
-    public function percentChange(): float
+    public function symbol(): string
     {
-        return $this->percentChange;
+        return $this->symbol;
     }
 
-    public function highestPrice(): float
+    public function type(): string
     {
-        return $this->highestPrice;
-    }
-
-    public function lowestPrice(): float
-    {
-        return $this->lowestPrice;
-    }
-
-    public function openPrice(): float
-    {
-        return $this->openPrice;
-    }
-
-    public function previousClosePrice(): float
-    {
-        return $this->previousClosePrice;
+        return $this->type;
     }
 }

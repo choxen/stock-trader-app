@@ -15,8 +15,9 @@ class Stock extends Model
 
     protected $fillable = [
         'company',
-        'stock',
+        'ticker',
         'quantity',
+        'total_invested',
     ];
 
     public function user()

@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
+use App\Events\StockSold;
 use App\Models\Stock;
 use App\Models\Transaction;
 use App\Repositories\StocksRepository;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class StockSellService
 {
@@ -22,52 +21,31 @@ class StockSellService
     {
         $user = Auth::user();
 
-        $timezone = env('TIMEZONE');
-        $opens = Carbon::today($timezone)->addHours(16);
-        $closes = Carbon::today($timezone)->addHours(23);
-        $current = now($timezone);
-
-        if ($current->lt($opens) && $current->gt($closes)) {
-            return redirect()->back()->withErrors([
-                'msg' => 'Stock market works from ' . $opens->format('H:i') . ' till ' . $closes->format('H:i')
-            ]);
-        }
-
-        $companyQuoteData = $this->stocksRepository->companyQuoteData($stock->stock);
+        $companyQuoteData = $this->stocksRepository->companyQuoteData($stock->ticker);
 
         $total = $companyQuoteData->currentPrice() * $quantity;
-        $totalInCents = $total * 100;
 
-        $userStock = Stock::where([
-            'user_id' => $user->id,
-            'stock' => $stock->stock
-        ])->first();
+        $stock->quantity -= $quantity;
+        $stock->save();
 
-        if ($userStock->quantity < $quantity) {
-            return redirect()->back()->withErrors([
-                'msg' => 'You dont that much stocks...'
-            ]);
-        }
+        StockSold::dispatch($user, $stock->ticker, $quantity, $total);
 
-        $userStock->quantity -= $quantity;
-        $userStock->save();
-
-        if ($userStock->quantity <= 0) {
-            $userStock->delete();
+        if ($stock->quantity <= 0) {
+            $stock->delete();
         }
 
         $transaction = (new Transaction([
-            'stock' => $stock->stock,
+            'stock' => $stock->ticker,
             'quantity' => $quantity,
-            'credits_amount' => $total,
+            'money' => $total,
             't_type' => 'Sold',
-            'created_at' => $current
+            'created_at' => config('app.timezone')
         ]));
 
         $transaction->user()->associate($user);
         $transaction->save();
 
-        $user->credits_amount += $totalInCents;
+        $user->money += $total;
         $user->save();
     }
 }

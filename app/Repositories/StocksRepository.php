@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\CompanyProfile;
 use App\Models\StockData;
+use App\Models\StockQuoteData;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 
@@ -18,33 +19,36 @@ class StocksRepository implements StocksRepositoryInterface
         $this->apiKey = env('FINHUB_API_KEY');
     }
 
-    public function stockData(string $q): array
+    public function stockData(string $q): StockData
     {
         $q = strtoupper($q);
+
+        if (Cache::has('company.symbol.' . $q)) {
+            return new StockData(Cache::get('company.symbol.' . $q));
+        }
 
         $url = 'https://finnhub.io/api/v1/search?q=' . $q . '&token=' . $this->apiKey;
         $res = $this->client->request('GET', $url);
 
-        if (Cache::has('company.symbol.' . $q)) {
-            return Cache::get('company.symbol.' . $q);
-        }
-
         $data = json_decode($res->getBody(), true);
+        $firstRecord = $data['result'][0];
+        $stockData = new StockData($firstRecord);
 
-        Cache::put('company.symbol.' . $q, $data['result'][0], now()->addMinutes(10));
+        Cache::put('company.symbol.' . $q, $firstRecord, now()->addMinutes(10));
 
-        return $data['result'][0];
+        return $stockData;
     }
 
     public function companyProfile(string $symbol): CompanyProfile
     {
         $symbol = strtoupper($symbol);
-        $url = 'https://finnhub.io/api/v1/stock/profile2?symbol=' . $symbol . '&token=' . $this->apiKey;
-        $res = $this->client->request('GET', $url);
 
         if (Cache::has('company.profile.' . $symbol)) {
             return new CompanyProfile(Cache::get('company.profile.' . $symbol));
         }
+
+        $url = 'https://finnhub.io/api/v1/stock/profile2?symbol=' . $symbol . '&token=' . $this->apiKey;
+        $res = $this->client->request('GET', $url);
 
         $companyProfileData = json_decode($res->getBody(), true);
 
@@ -53,13 +57,19 @@ class StocksRepository implements StocksRepositoryInterface
         return new CompanyProfile($companyProfileData);
     }
 
-    public function companyQuoteData(string $symbol): StockData
+    public function companyQuoteData(string $symbol): StockQuoteData
     {
+        if (Cache::has('company.quote.data.' . $symbol)) {
+            return new StockQuoteData(Cache::get('company.quote.data.' . $symbol));
+        }
+
         $url = 'https://finnhub.io/api/v1/quote?symbol=' . $symbol . '&token=' . $this->apiKey;
         $res = $this->client->request('GET', $url);
 
         $companyQuoteData = json_decode($res->getBody(), true);
 
-        return new StockData($companyQuoteData);
+        Cache::put('company.quote.data.' . $symbol, $companyQuoteData, now()->addMinutes(10));
+
+        return new StockQuoteData($companyQuoteData);
     }
 }

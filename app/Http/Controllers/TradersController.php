@@ -11,10 +11,6 @@ class TradersController extends Controller
     {
         $transactions = Auth::user()->transactions()->orderBy('created_at', 'DESC')->paginate(10);
 
-        foreach ($transactions->all() as $transaction) {
-            $transaction->credits_amount = number_format($transaction->credits_amount, 2);
-        }
-
         return view('transactions')->with(['transactions' => $transactions]);
     }
 }

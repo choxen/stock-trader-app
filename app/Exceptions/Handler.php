@@ -38,7 +38,7 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             if ($e instanceof ErrorException || $e instanceof ClientException) {
-                return redirect()->back()->withErrors(['msg' => 'Stock not found']);
+                return redirect()->back()->withErrors(['msg' => 'Something went wrong...']);
             }
         });
     }

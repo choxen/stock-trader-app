@@ -14,7 +14,7 @@ class Transaction extends Model
     protected $fillable = [
         'stock',
         'quantity',
-        'credits_amount',
+        'money',
         't_type'
     ];
 

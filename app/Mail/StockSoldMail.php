@@ -2,13 +2,14 @@
 
 namespace App\Mail;
 
+use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class StockPurchasedMail extends Mailable implements ShouldQueue
+class StockSoldMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -27,13 +28,13 @@ class StockPurchasedMail extends Mailable implements ShouldQueue
 
     public function build()
     {
-        return $this->subject('Stock Purchased')
+        return $this->subject('Stock Sold')
             ->with([
                 'name' => $this->user->name,
                 'ticker' => $this->ticker,
                 'quantity' => $this->quantity,
-                'price' => $this->price * $this->quantity
+                'price' => $this->price
             ])
-            ->view('mail.stock-purchased');
+            ->view('mail.stock-sold');
     }
 }
