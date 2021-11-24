@@ -9,7 +9,7 @@
 - Buy stocks
 - View / Manage your own portfolio
 - Stock Market works between 16:00 and 23:00 (Mon-Fri)
-- User recieves email on stock sell and stock purchase
+- User receives email on stock sell and stock purchase
 
 ### Requirements:
 
