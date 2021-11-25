@@ -18,6 +18,7 @@ class Stock extends Model
         'ticker',
         'quantity',
         'total_invested',
+        'current_total',
     ];
 
     public function user()

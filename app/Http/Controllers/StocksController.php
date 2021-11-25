@@ -31,7 +31,7 @@ class StocksController extends Controller
 
         foreach ($stocks->all() as $stock) {
             $price = $this->stocksRepository->companyQuoteData($stock->ticker)->currentPrice();
-            $stock->total_profit = $price * $stock->quantity - $stock->total_invested;
+            $stock->total_profit = $price * $stock->quantity - $stock->current_total;
         }
 
         return view('owned-stocks')->with(['stocks' => $stocks]);

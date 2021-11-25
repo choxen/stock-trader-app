@@ -59,8 +59,12 @@
                                         <p class="mr-1.5">Invested:</p>
                                         {{ number_format($stock->total_invested, 2) }}$
                                     </div>
+                                    <div class="inline-flex mr-3">
+                                        <p class="mr-1.5">Current value:</p>
+                                        {{ number_format($stock->current_total, 2) }}$
+                                    </div>
                                     <div class="inline-flex">
-                                        <p class="mr-1.5">Profit:</p>
+                                        <p class="mr-1.5">Total profit:</p>
                                         {{ number_format($stock->total_profit, 2) }}$
                                     </div>
                                 </div>

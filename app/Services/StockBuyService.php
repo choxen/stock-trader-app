@@ -23,7 +23,8 @@ class StockBuyService
             ],
             [
                 'quantity' => DB::raw('quantity + ' . $quantity),
-                'total_invested' => DB::raw('total_invested +' . $stocksPrice)
+                'total_invested' => DB::raw('total_invested +' . $stocksPrice),
+                'current_total' => DB::raw('current_total +' . $stocksPrice)
             ],
         );
 

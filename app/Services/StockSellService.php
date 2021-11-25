@@ -26,6 +26,7 @@ class StockSellService
         $total = $companyQuoteData->currentPrice() * $quantity;
 
         $stock->quantity -= $quantity;
+        $stock->current_total -= $total;
         $stock->save();
 
         StockSold::dispatch($user, $stock->ticker, $quantity, $total);
